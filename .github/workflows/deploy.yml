@@ -16,6 +16,9 @@ on:
       TF_BUCKET_NAME:
         description: "Name of the AWS Bucket to get TFState data"
         required: true
+      LAMBDA_SG_ID:
+        description: "SG da Lambda auth-handler (oficina-auth-gateway) a liberar no RDS. Deixe vazio se o auth-gateway ainda não existir."
+        required: false
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -43,4 +46,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" -auto-approve
+        run: |
+          terraform apply -auto-approve \
+            -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" \
+            -var="lambda_security_group_id=${{ inputs.LAMBDA_SG_ID }}"
