@@ -14,7 +14,10 @@ on:
   workflow_dispatch:
     inputs:
       TF_BUCKET_NAME:
-        description: "Name of the AWS Bucket to get TFState data"
+        description: "Nome do bucket S3 (mesmo usado no oficina-infra-cluster)"
+        required: true
+      DB_PASSWORD:
+        description: "Senha master do RDS (8-128 chars, sem / @ \" nem espaço)"
         required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -40,7 +43,23 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="bucket=${{ inputs.TF_BUCKET_NAME }}"
+
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" \
+            -var="db_password=${{ inputs.DB_PASSWORD }}"
 
       - name: Terraform Apply
-        run: terraform apply -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" -auto-approve
+        run: |
+          terraform apply -auto-approve \
+            -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" \
+            -var="db_password=${{ inputs.DB_PASSWORD }}"
+
+      - name: Exibir endpoint do RDS
+        run: |
+          echo "✅ RDS provisionado com sucesso!"
+          echo "DB_Endpoint: $(terraform output -raw DB_Endpoint)"
+          echo ""
+          echo "⚠️  Copie o DB_Endpoint acima e use como input no deploy da aplicação (Tech-Challenge-15SOAT)."
