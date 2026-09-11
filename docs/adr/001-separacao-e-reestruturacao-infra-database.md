@@ -1,4 +1,7 @@
-# Título: Separação e reestruturação da infraestrutura de banco de dados
+# 001 — Separação e reestruturação da infraestrutura de banco de dados
+
+**Status:** Aceita
+**Data:** 2024-05-15
 
 ## Resumo
 Extração da infraestrutura do banco de dados PostgreSQL (RDS) do repositório monolítico
