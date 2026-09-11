@@ -16,6 +16,9 @@ on:
       TF_BUCKET_NAME:
         description: "Nome do bucket S3 (mesmo usado no oficina-infra-cluster)"
         required: true
+      DB_PASSWORD:
+        description: "Senha master do RDS (8-128 chars, sem / @ \" nem espaço)"
+        required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -46,13 +49,13 @@ jobs:
         run: |
           terraform plan \
             -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" \
-            -var="db_password=${{ secrets.RDS_PASSWORD }}"
+            -var="db_password=${{ inputs.DB_PASSWORD }}"
 
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve \
             -var="infra_state_bucket=${{ inputs.TF_BUCKET_NAME }}" \
-            -var="db_password=${{ secrets.RDS_PASSWORD }}"
+            -var="db_password=${{ inputs.DB_PASSWORD }}"
 
       - name: Exibir endpoint do RDS
         run: |
