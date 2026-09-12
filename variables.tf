@@ -8,3 +8,9 @@ variable "db_password" {
   description = "Senha master do RDS PostgreSQL (8-128 chars, sem / @ \" nem espaço)"
   sensitive   = true
 }
+
+variable "lambda_security_group_id" {
+  type        = string
+  description = "SG da Lambda auth-handler (oficina-auth-gateway), liberado para acessar o RDS na porta 5432. Opcional: deixe vazio se o auth-gateway ainda não existir."
+  default     = ""
+}

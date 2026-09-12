@@ -4,15 +4,19 @@ resource "aws_security_group" "rds" {
   description = "Permite acesso ao RDS PostgreSQL a partir dos nos do EKS"
   vpc_id      = data.terraform_remote_state.infra.outputs.VPC_ID
 
-  # Entrada: porta 5432 (PostgreSQL) SOMENTE vinda do Security Group do cluster EKS.
+  # Entrada: porta 5432 (PostgreSQL) SOMENTE vinda do Security Group do cluster EKS
+  # e, opcionalmente, do SG da Lambda auth-handler (oficina-auth-gateway).
   # Nao usamos cidr_blocks aqui de proposito: assim o banco nao fica aberto para a
-  # internet, so os pods que rodam no cluster conseguem alcancar.
+  # internet, so quem estiver nesses SGs consegue alcancar.
   ingress {
-    description     = "PostgreSQL vindo dos nos do EKS"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [data.terraform_remote_state.infra.outputs.EKS_Security_Group_Id]
+    description = "PostgreSQL vindo dos nos do EKS e da Lambda auth-handler"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    security_groups = compact([
+      data.terraform_remote_state.infra.outputs.EKS_Security_Group_Id,
+      var.lambda_security_group_id,
+    ])
   }
 
   # Saida liberada (padrao).
