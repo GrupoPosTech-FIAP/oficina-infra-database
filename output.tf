@@ -12,3 +12,8 @@ output "DB_Username" {
   description = "Usuário master do RDS"
   value       = aws_db_instance.default.username
 }
+
+output "DynamoDB_Tabelas_Execution" {
+  description = "Tabelas DynamoDB do oficina-execution-service"
+  value       = [aws_dynamodb_table.execucoes.name, aws_dynamodb_table.execution_outbox.name]
+}
