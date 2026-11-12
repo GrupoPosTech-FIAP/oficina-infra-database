@@ -1,8 +1,10 @@
 # oficina-infra-database
 
-Repositório responsável por provisionar o banco de dados **PostgreSQL** da Oficina API na AWS,
-utilizando o serviço **RDS** dentro da infraestrutura de rede e cluster já criada pelo repositório
-[`oficina-infra-cluster`](https://github.com/GrupoPosTech-FIAP/oficina-infra-cluster).
+Repositório responsável por provisionar os bancos de dados da Oficina na AWS: o **PostgreSQL**
+(RDS) usado pela OS, billing e inventory, dentro da infraestrutura de rede e cluster já criada pelo
+repositório [`oficina-infra-cluster`](https://github.com/GrupoPosTech-FIAP/oficina-infra-cluster),
+e as tabelas **DynamoDB** (NoSQL) do
+[`oficina-execution-service`](https://github.com/GrupoPosTech-FIAP/oficina-execution-service).
 
 > Este repositório **depende** do `oficina-infra-cluster` estar provisionado primeiro.
 > Ele lê os outputs do cluster (VPC, Subnets, Security Group) via Terraform Remote State.
@@ -24,6 +26,7 @@ oficina-infra-database/
 ├── security-group.tf           # SG do RDS: libera porta 5432 apenas para o cluster EKS
 ├── db_subnet_group.tf          # Grupo de subnets para o RDS (reutiliza subnets do cluster)
 ├── db_instance.tf              # Instância do RDS PostgreSQL
+├── dynamodb.tf                 # Tabelas DynamoDB do execution-service (execuções e outbox)
 ├── variables.tf                # Variáveis de entrada (bucket do state e senha do banco)
 ├── output.tf                   # Outputs exportados (endpoint, nome e usuário do banco)
 ├── docker-compose.yaml         # Banco local para desenvolvimento (sem AWS)
@@ -38,6 +41,7 @@ oficina-infra-database/
 |---|---|---|
 | **Terraform** | >= 1.2 | Provisionamento de infraestrutura como código (IaC) |
 | **AWS RDS** | PostgreSQL 15 | Banco de dados relacional gerenciado |
+| **AWS DynamoDB** | — | Banco NoSQL do `oficina-execution-service` (`oficina-execucoes`, `oficina-execution-outbox`, sob demanda) |
 | **AWS S3** | — | Armazenamento do `terraform.tfstate` |
 | **GitHub Actions** | — | Pipeline de CI/CD para provisionamento automático |
 | **Docker Compose** | — | Banco PostgreSQL local para desenvolvimento |
